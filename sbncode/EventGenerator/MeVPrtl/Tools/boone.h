@@ -41,9 +41,10 @@ struct BooNENtuple
         BooNe(std::string Filename)
         {
             filename = Filename;
-            std::cout << "loading file" << filename << std::endl;
+            if (debug) std::cout << "loading file" << filename << std::endl;
             SetRootFile();
-            std::cout << "Branches addres set" << std::endl;
+            if (debug) std::cout << "Branches addres set" << std::endl;
+
             if (debug)
             {
                 std::cout << "Printting first entry" << std::endl;

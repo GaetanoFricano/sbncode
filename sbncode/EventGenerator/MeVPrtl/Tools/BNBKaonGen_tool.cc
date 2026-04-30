@@ -239,29 +239,40 @@ double BNBKaonGen::GetPOT() {
 const bsim::BooNe *BNBKaonGen::GetNextEntry() {
   // new file -- set the start entry 
   if (fNewFile) {
-    // wrap file index around
-    if (fFileIndex >= fFluxFiles.size()) {
-      fFileIndex = 0;
-    }
-    // if (fFileIndex >= fFluxFiles.size()) {
-    //  throw cet::exception("FluxReader Out of Files", 
-    //                       "At file index (" + std::to_string(fFileIndex) + ") of available files (" + std::to_string(fFluxFiles.size()) + ").");
-    // }
 
-    if(fVerbose) std::cout << "New file: " << fFluxFiles[fFileIndex] << " at index: " << fFileIndex << " of: " << fFluxFiles.size() << std::endl;
-    if (fFluxFile) delete fFluxFile;
-    fFluxFile = new TFile(fFluxFiles[fFileIndex].c_str());
-    fFluxTree = (TTree*)fFluxFile->Get(fTreeName.c_str());
-    // fFluxTree->SetBranchAddress("dk2nu",&fDk2Nu);
-    fBooNe = new bsim::BooNe(fFluxFiles[fFileIndex].c_str());
+  // wrap file index
+  if (fFileIndex >= fFluxFiles.size()) {
+    fFileIndex = 0;
+  }
 
-    // Start at a random index in this file
-    fEntryStart = CLHEP::RandFlat::shootInt(fEngine, fFluxTree->GetEntries()-1);
-    fEntry = fEntryStart;
+  if (fVerbose)
+    std::cout << "New file: " << fFluxFiles[fFileIndex]
+              << " (" << fFileIndex+1 << "/" << fFluxFiles.size() << ")\n";
 
-    // load the POT in this file
-    // fThisFilePOT = LoadPOT();
-    fNewFile = false;
+  // ===== CHIUDI FILE ROOT PRECEDENTE =====
+  if (fFluxFile) {
+    delete fFluxFile;
+    fFluxFile = nullptr;
+  }
+
+  // ===== CHIUDI BooNe PRECEDENTE (FONDAMENTALE) =====
+  if (fBooNe) {
+    delete fBooNe;
+    fBooNe = nullptr;
+  }
+
+  // ===== APRI NUOVO FILE =====
+  fFluxFile = TFile::Open(fFluxFiles[fFileIndex].c_str(), "READ");
+  fFluxTree = (TTree*)fFluxFile->Get(fTreeName.c_str());
+
+  // ===== CREA BooNe UNA SOLA VOLTA PER FILE =====
+  fBooNe = new bsim::BooNe(fFluxFiles[fFileIndex].c_str());
+
+  // Start at random entry
+  fEntryStart = CLHEP::RandFlat::shootInt(fEngine, fFluxTree->GetEntries() - 1);
+  fEntry = fEntryStart;
+
+  fNewFile = false;
   }
   else {
     fEntry = (fEntry + 1) % fFluxTree->GetEntries();
