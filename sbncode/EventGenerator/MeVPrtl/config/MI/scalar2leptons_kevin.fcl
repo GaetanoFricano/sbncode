@@ -1,0 +1,86 @@
+#include "bnb_charged_common_sbnd.fcl"
+#include "bnb_kaon_common.fcl"
+
+BEGIN_PROLOG
+
+# ===== parameters you vary =====
+scalarM:   0.250           # GeV
+BRprod:    1e-11        # BR(K -> pi S)   (nuovo input per Meson2ScalarKevin)
+CTau_cm:   5000            # c*tau in cm     (nuovo input per ScalarDecayKevin)
+BR_ee:     1.0             # BR(S -> e+e-)   (nuovo input per ScalarDecayKevin, 0..1)
+
+kaon_energy: 8            # same role as before (raytrace reference)
+
+# ======================
+#  FLUX: scalar (K -> pi + S)
+# ======================
+scalar_flux: {
+  tool_type: Meson2ScalarKevin
+
+  M:      @local::scalarM
+  BRprod: @local::BRprod
+
+  # same semantics as old tool
+  Parents: [321]
+  CorrectDK2NU: true
+  SecondarySignConvention: "legacy"
+
+  Beam2DetectorRotation: @local::sbnd_bnb_beam2detector_rotation
+  BeamOrigin:            @local::sbnd_bnb_beam_origin
+
+  SpillTimeConfig:  "evgb::EvtTimeFNALBeam  booster,  dtbucket=18.936, sigma=1.308"
+  GlobalTimeOffset: 0
+
+  Verbose: false
+}
+
+# ======================
+#  RAYTRACE (same as before)
+# ======================
+mxdraytrace: @local::mixedweight_ray_trace_box
+mxdraytrace.ReferencePrtlMass: @local::scalarM
+mxdraytrace.ReferenceScndPDG: 211
+mxdraytrace.ReferencePrimaryEnergy: @local::kaon_energy
+mxdraytrace.ReferencePrimPDG: 321
+
+# ======================
+#  DECAY: scalar -> ee, mumu (paper-style inputs)
+# ======================
+scalar_decay: {
+  tool_type: ScalarDecayKevin
+
+  AllowElectronDecay: true
+  AllowMuonDecay: true
+  AddTimeOfFlight: true
+
+  # NEW required inputs
+  CTau_cm: @local::CTau_cm
+  BR_ee:   @local::BR_ee
+
+  # optional MaxWeight precompute (same pattern as before, but uses CTau)
+  ReferenceRayLength:   7.549834e2
+  ReferenceRayDistance: 110e2
+  ReferenceMass:        @local::scalarM
+  ReferenceCTau_cm:     @local::CTau_cm
+  ReferenceEnergy:      @local::kaon_energy
+
+  Verbose: false
+}
+
+# ======================
+#  GENERATOR MODULE (same schema)
+# ======================
+llp_gen_scalar_agnostic: {
+  module_type: MeVPrtlGen
+  Deweight: false
+  Produce: true
+  AnaOutput: true
+  Verbose: false
+
+  MesonGen: @local::bnb_kaon
+  Flux:     @local::scalar_flux
+  RayTrace: @local::mxdraytrace
+  Decay:    @local::scalar_decay
+}
+
+END_PROLOG

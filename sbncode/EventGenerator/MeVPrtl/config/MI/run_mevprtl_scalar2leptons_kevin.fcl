@@ -1,0 +1,59 @@
+#include "scalar2leptons_kevin.fcl"
+#include "simulationservices_sbnd.fcl"
+
+process_name: MeVPrtl
+
+services: {
+  @table::sbnd_simulation_services
+
+  TFileService: { 
+    fileName: "hists_mevprtl.root" 
+  }
+
+  IFDH: { }
+
+  NuRandomService: {
+
+  service_type: "NuRandomService"
+
+  policy: "random"
+
+  baseSeed: BASESEED
+
+  }
+}
+
+source: { 
+  module_type: EmptyEvent 
+}
+
+physics: {
+  producers: {
+    generator: @local::llp_gen_scalar_agnostic
+  }
+
+  analyzers: {
+    dump: {
+      module_type: MeVPrtlTruthDumper
+      InputTag: "generator"
+    }
+  }
+
+  simulate: [ generator ]
+  analyze:  [ dump ]
+
+  stream: [ out ]
+
+  trigger_paths: [ simulate ]
+  end_paths:     [ analyze, stream ]
+}
+
+outputs: {
+  out: {
+    module_type: RootOutput
+    fileName: "mevprtl_art.root"
+    dataTier: "simulated"
+    compressionLevel: 1
+    saveMemoryObjectThreshold: 0
+  }
+}
