@@ -1,0 +1,84 @@
+#include "bnb_charged_common_sbnd.fcl"
+#include "bnb_kaon_common.fcl"
+
+BEGIN_PROLOG
+
+# ===== parameters you vary =====
+scalarM:   0.250
+BRprod:    1e-11
+CTau_cm:   5000
+BR_ee:     1.0
+
+kaon_energy: 8
+
+# ======================
+# FLUX: K -> pi + S
+# ======================
+scalar_flux: {
+  tool_type: Meson2ScalarKevin
+
+  M:      @local::scalarM
+  BRprod: @local::BRprod
+
+  Parents: [321]
+  CorrectDK2NU: true
+  SecondarySignConvention: "legacy"
+
+  Beam2DetectorRotation: @local::sbnd_bnb_beam2detector_rotation
+  BeamOrigin:            @local::sbnd_bnb_beam_origin
+
+  SpillTimeConfig:  "evgb::EvtTimeFNALBeam booster, dtbucket=18.936, sigma=1.308"
+  GlobalTimeOffset: 0
+
+  Verbose: false
+}
+
+# ======================
+# RAYTRACE
+# ======================
+mxdraytrace: @local::mixedweight_ray_trace_box
+mxdraytrace.ReferencePrtlMass: @local::scalarM
+mxdraytrace.ReferenceScndPDG: 211
+mxdraytrace.ReferencePrimaryEnergy: @local::kaon_energy
+mxdraytrace.ReferencePrimPDG: 321
+
+# ======================
+# DECAY: scalar -> ee, mumu
+# ======================
+scalar_decay: {
+  tool_type: ScalarDecayKevin
+
+  AllowElectronDecay: true
+  AllowMuonDecay: true
+  AddTimeOfFlight: true
+
+  CTau_cm: @local::CTau_cm
+  BR_ee:   @local::BR_ee
+
+  ReferenceRayLength:   7.549834e2
+  ReferenceRayDistance: 110e2
+  ReferenceMass:        @local::scalarM
+  ReferenceCTau_cm:     @local::CTau_cm
+  ReferenceEnergy:      @local::kaon_energy
+
+  Verbose: false
+}
+
+# ======================
+# GENERATOR MODULE
+# ======================
+scalar_gen: {
+  module_type: MeVPrtlGen
+
+  Deweight: false
+  Produce: true
+  AnaOutput: true
+  Verbose: false
+
+  MesonGen: @local::bnb_kaon
+  Flux:     @local::scalar_flux
+  RayTrace: @local::mxdraytrace
+  Decay:    @local::scalar_decay
+}
+
+END_PROLOG

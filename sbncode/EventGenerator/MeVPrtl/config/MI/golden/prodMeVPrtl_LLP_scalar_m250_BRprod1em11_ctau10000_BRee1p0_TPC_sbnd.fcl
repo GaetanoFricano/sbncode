@@ -1,0 +1,41 @@
+#include "prodMeVPrtl_LLP_scalar_sbnd.fcl"
+
+###----------Set scalar mass [GeV]----------###
+
+scalarM: 0.250
+
+physics.producers.generator.Flux.M: @local::scalarM
+physics.producers.generator.RayTrace.ReferencePrtlMass: @local::scalarM
+physics.producers.generator.Decay.ReferenceMass: @local::scalarM
+
+
+###----------Set production BR K -> pi S ----------###
+
+BRprod: 1e-11
+
+physics.producers.generator.Flux.BRprod: @local::BRprod
+
+
+###----------Set scalar lifetime c*tau [cm]----------###
+
+CTau_cm: 10000
+
+physics.producers.generator.Decay.CTau_cm: @local::CTau_cm
+physics.producers.generator.Decay.ReferenceCTau_cm: @local::CTau_cm
+
+
+###----------Set scalar decay BR S -> e+e- ----------###
+
+BR_ee: 1.0
+
+physics.producers.generator.Decay.BR_ee: @local::BR_ee
+
+
+###-----------Verbose--------------###
+
+#include "set_MeVPrtl_Verbose.fcl"
+
+
+###----------Set geometry ----------###
+
+#include "set_MeVPrtl_GeoTPC.fcl"
