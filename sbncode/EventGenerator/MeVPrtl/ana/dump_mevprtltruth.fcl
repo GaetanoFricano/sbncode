@@ -1,0 +1,40 @@
+process_name: Dump
+
+services:
+{
+  message:
+  {
+    destinations:
+    {
+      cout:
+      {
+        type: "cout"
+        threshold: "INFO"
+      }
+    }
+  }
+}
+
+source:
+{
+  module_type: RootInput
+  fileNames:
+  [
+  "/exp/sbnd/app/users/gfricano/generator/larsoft_v10_10_03/srcs/sbncode/sbncode/EventGenerator/MeVPrtl/config/MI/prodMeVPrtl_LLP_sbnd_hnlDecay_GenHNLDecay-20260106T114347.root"
+  ]
+}
+
+physics:
+{
+  analyzers:
+  {
+    dump:
+    {
+      module_type: MeVPrtlTruthDumper
+      InputTag: "generator"
+    }
+  }
+
+  analyze: [ dump ]
+  end_paths: [ analyze ]
+}

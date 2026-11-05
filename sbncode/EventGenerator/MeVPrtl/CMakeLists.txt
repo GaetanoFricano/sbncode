@@ -1,5 +1,6 @@
 add_subdirectory(Tools)
 add_subdirectory(config)
+add_subdirectory(ana)
 
 cet_build_plugin( MeVPrtlGen art::module
           LIBRARIES

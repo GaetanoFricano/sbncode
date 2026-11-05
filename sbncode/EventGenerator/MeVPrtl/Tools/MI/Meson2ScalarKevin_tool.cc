@@ -69,7 +69,7 @@ private:
     switch (kaon_pdg) {
       case 321:
       case -321:
-        return 0.6339 + 0.0559 + 0.0330;
+        return 0.6339 /* K+ -> mu+ nu */ + 0.0507 /* K+ -> pi0 e+ nu (PDG) */ + 0.0330 /* K+ -> pi0 mu+ nu */;
       default:
         return 1.0;
     }
