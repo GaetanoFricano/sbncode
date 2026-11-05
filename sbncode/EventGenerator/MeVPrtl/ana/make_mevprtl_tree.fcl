@@ -1,0 +1,36 @@
+process_name: MakeTree
+
+services:
+{
+  message:
+  {
+    destinations:
+    {
+      cout: { type: "cout" threshold: "INFO" }
+    }
+  }
+
+  TFileService: { fileName: "100kmevprtl_scalar2leptons_kevin_BRdecay_ee_1_BRprod_KpiS_1em11_ctau_1000m_m_250.root" }
+}
+
+source:
+{
+  module_type: RootInput
+  fileNames: [ "/exp/sbnd/app/users/gfricano/generator/larsoft_v10_10_03/srcs/sbncode/sbncode/EventGenerator/MeVPrtl/config/MI/100kmevprtl_scalar2leptons_kevin_BRdecay_ee_1_BRprod_KpiS_1em11_ctau_1000m_m_250_art.root" ]}
+
+physics:
+{
+  analyzers:
+  {
+    mk:
+    {
+      module_type: MeVPrtlTruthTreeMaker
+      InputTag: "generator"      # o quello che usi tu
+      TreeName: "mevprtl"
+      OneEntryPerTruth: true
+    }
+  }
+
+  analyze: [ mk ]
+  end_paths: [ analyze ]
+}
