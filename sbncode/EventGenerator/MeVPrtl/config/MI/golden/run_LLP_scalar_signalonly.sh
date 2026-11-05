@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTDIR=/exp/sbnd/data/users/gfricano/gen/LLP_scalar_signalonly/m250_BRprod1em11_ctau5000_BRee1p0
+OUTDIR=/exp/sbnd/data/users/gfricano/gen/scalar/m250MeVctau50m
 NEVENTS=25
 NJOBS=400
 MAXJOBS=1
