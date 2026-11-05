@@ -1,0 +1,54 @@
+BEGIN_PROLOG
+
+# beam -> det rotation (SBND in BNB frame, come nel tuo file)
+sbnd_bnb_beam2detector_rotation: [ 1, 0, 0,
+                                   0, 1, 0,
+                                   0, 0, 1 ]
+
+# beam origin: (x,y,z,t) in detector-in-beam frame (come tuo)
+sbnd_bnb_beam_origin: [0, 0, 0, 73.78, 0, 11000]
+
+# SBND detector box in det frame
+sbnd_detector_box: [-200, 200, -200, 200, 0, 500]  # cm
+
+# solid angle ref (front face / distance^2)
+sbnd_bnb_solid_angle_box: 1.3223e-3
+
+# --- Ray tracing tools (stessi tuoi pattern) ---
+ray_trace_box: {
+  tool_type: RayTraceBox
+  Box: @local::sbnd_detector_box
+  Verbose: false
+}
+
+rethrow_ray_trace_box: {
+  tool_type: ReThrowRayTraceBox
+  Box: @local::sbnd_detector_box
+  ReferenceLabSolidAngle: @local::sbnd_bnb_solid_angle_box
+  ReferencePrimaryEnergy: 8   # fallback, lo sovrascriviamo dopo
+  ReferencePrimPDG: 321       # fallback, lo sovrascriviamo dopo
+  Verbose: false
+}
+
+weighted_ray_trace_box: {
+  tool_type: WeightedRayTraceBox
+  Box: @local::sbnd_detector_box
+  ReferenceLabSolidAngle: @local::sbnd_bnb_solid_angle_box
+  ReferencePrimaryEnergy: 8
+  ReferencePrimPDG: 321
+  Verbose: false
+}
+
+mixedweight_ray_trace_box: {
+  tool_type: MixedWeightRayTraceBox
+  Box: @local::sbnd_detector_box
+  ReferenceLabSolidAngle: @local::sbnd_bnb_solid_angle_box
+  ReferencePrimaryEnergy: 8
+  ReferencePrimPDG: 321
+  MaxWeightFudge: 2.
+  NThrow: 250
+  FixNSuccess: false
+  Verbose: false
+}
+
+END_PROLOG

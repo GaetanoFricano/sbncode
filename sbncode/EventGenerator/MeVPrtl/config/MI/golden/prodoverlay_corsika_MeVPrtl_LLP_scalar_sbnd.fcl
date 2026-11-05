@@ -1,0 +1,12 @@
+#include "corsika_sbnd.fcl"
+#include "prodMeVPrtl_LLP_scalar_sbnd.fcl"
+
+physics.producers.corsika: @local::sbnd_corsika_p
+
+physics.simulate: [ generator, corsika ]
+
+outputs.out.fileName:
+  "prodMeVPrtl_cosmic_LLP_scalar_sbnd.root"
+
+services.TFileService.fileName:
+  "hists_prodMeVPrtl_cosmic_LLP_scalar_sbnd.root"
